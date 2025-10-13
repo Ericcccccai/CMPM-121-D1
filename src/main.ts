@@ -27,6 +27,8 @@ const upgrades: Upgrade[] = [
   { name: "C", cost: 1000, rate: 50 },
 ];
 
+const currentCosts: number[] = [10, 100, 1000]; // starts at base cost, grows with purchases
+
 // Track ownership
 const ownedUpgrades: number[] = [0, 0, 0];
 
@@ -49,7 +51,7 @@ const updateDisplay = () => {
 
   // Only update buttons with class 'upgrade-btn'
   document.querySelectorAll(".upgrade-btn").forEach((btn, i) => {
-    (btn as HTMLButtonElement).disabled = count < upgrades[i].cost;
+    (btn as HTMLButtonElement).disabled = count < currentCosts[i];
   });
 
   updateUI();
@@ -65,18 +67,26 @@ button.onclick = () => {
 };
 
 // Create purchase buttons for each upgrade
-upgrades.forEach((upgrade, _i) => {
+upgrades.forEach((upgrade, i) => {
   const btn = document.createElement("button");
   btn.textContent = `Buy ${upgrade.name} (+${
     upgrade.rate.toFixed(1)
-  }/sec) - Cost: ${upgrade.cost}`;
+  }/sec) - Cost: ${currentCosts[i].toFixed(1)}`;
   btn.classList.add("upgrade-btn");
-  btn.disabled = count < upgrade.cost;
+  btn.disabled = count < currentCosts[i]; // Use current cost, not base cost
   btn.onclick = () => {
-    if (count >= upgrade.cost) {
-      count -= upgrade.cost;
-      ownedUpgrades[_i]++;
+    if (count >= currentCosts[i]) {
+      count -= currentCosts[i];
+      ownedUpgrades[i]++;
       totalRate += upgrade.rate;
+
+      // Increase price by 15% after purchase
+      currentCosts[i] *= 1.15;
+
+      // Update button text and re-check all button states
+      btn.textContent = `Buy ${upgrade.name} (+${
+        upgrade.rate.toFixed(1)
+      }/sec) - Cost: ${currentCosts[i].toFixed(1)}`;
       updateDisplay();
     }
   };
