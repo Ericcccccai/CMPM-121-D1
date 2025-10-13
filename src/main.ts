@@ -6,12 +6,12 @@ let totalRate = 0; // combined production rate from all upgrades
 
 // UI elements
 const button = document.createElement("button");
-button.textContent = "⚡ Zap";
+button.textContent = "Sell Flower";
 button.classList.add("manual-click-btn");
 document.body.appendChild(button);
 
 const counterDisplay = document.createElement("div");
-counterDisplay.textContent = `Energy: ${count}`;
+counterDisplay.textContent = `Money: ${count}`;
 document.body.appendChild(counterDisplay);
 
 // Upgrade definitions
@@ -22,9 +22,9 @@ interface Upgrade {
 }
 
 const upgrades: Upgrade[] = [
-  { name: "A", cost: 10, rate: 0.1 },
-  { name: "B", cost: 100, rate: 2.0 },
-  { name: "C", cost: 1000, rate: 50 },
+  { name: "Seeds", cost: 10, rate: 0.1 },
+  { name: "Planter", cost: 100, rate: 2.0 },
+  { name: "Greenhouse", cost: 1000, rate: 50 },
 ];
 
 const currentCosts: number[] = [10, 100, 1000]; // starts at base cost, grows with purchases
@@ -34,7 +34,7 @@ const ownedUpgrades: number[] = [0, 0, 0];
 
 // Status displays
 const rateDisplay = document.createElement("div");
-rateDisplay.textContent = "Production rate: 0 units/sec";
+rateDisplay.textContent = "Production rate: 0 flowers/sec";
 document.body.appendChild(rateDisplay);
 
 const ownedDisplays: HTMLDivElement[] = [];
@@ -47,7 +47,7 @@ upgrades.forEach((upgrade, _i) => {
 
 // Update display and button states
 const updateDisplay = () => {
-  counterDisplay.textContent = `Energy: ${count.toFixed(1)}`;
+  counterDisplay.textContent = `Money: ${count.toFixed(1)}$`;
 
   // Only update buttons with class 'upgrade-btn'
   document.querySelectorAll(".upgrade-btn").forEach((btn, i) => {
@@ -110,7 +110,7 @@ requestAnimationFrame(animate);
 function updateUI() {
   rateDisplay.textContent = `Production rate: ${
     totalRate.toFixed(1)
-  } units/sec`;
+  } Dollars/sec`;
   ownedUpgrades.forEach((owned, i) => {
     ownedDisplays[i].textContent = `${upgrades[i].name}: ${owned} owned`;
   });
