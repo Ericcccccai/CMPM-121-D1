@@ -1,7 +1,7 @@
 import "./style.css";
 
 // Game state
-let count = 0;
+let money = 0;
 let totalRate = 0; // combined production rate from all upgrades
 
 // UI elements
@@ -11,26 +11,45 @@ button.classList.add("manual-click-btn");
 document.body.appendChild(button);
 
 const counterDisplay = document.createElement("div");
-counterDisplay.textContent = `Money: ${count}`;
+counterDisplay.textContent = `Money: ${money}`;
 document.body.appendChild(counterDisplay);
 
 // Upgrade definitions
 interface Upgrade {
   name: string;
+  baseCost: number;
   cost: number;
   rate: number;
+  owned: number;
+  button: HTMLButtonElement;
 }
 
 const upgrades: Upgrade[] = [
-  { name: "Seeds", cost: 10, rate: 0.1 },
-  { name: "Planter", cost: 100, rate: 2.0 },
-  { name: "Greenhouse", cost: 1000, rate: 50 },
+  {
+    name: "🌱 Buy Seeds",
+    baseCost: 10,
+    cost: 10,
+    rate: 0.1,
+    owned: 0,
+    button: document.createElement("button"),
+  },
+  {
+    name: "🪴 Buy Planter",
+    baseCost: 100,
+    cost: 100,
+    rate: 2.0,
+    owned: 0,
+    button: document.createElement("button"),
+  },
+  {
+    name: "🌿 Buy Greenhouse",
+    baseCost: 1000,
+    cost: 1000,
+    rate: 50,
+    owned: 0,
+    button: document.createElement("button"),
+  },
 ];
-
-const currentCosts: number[] = [10, 100, 1000]; // starts at base cost, grows with purchases
-
-// Track ownership
-const ownedUpgrades: number[] = [0, 0, 0];
 
 // Status displays
 const rateDisplay = document.createElement("div");
@@ -46,51 +65,38 @@ upgrades.forEach((upgrade, _i) => {
 });
 
 // Update display and button states
-const updateDisplay = () => {
-  counterDisplay.textContent = `Money: ${count.toFixed(1)}$`;
-
-  // Only update buttons with class 'upgrade-btn'
-  document.querySelectorAll(".upgrade-btn").forEach((btn, i) => {
-    (btn as HTMLButtonElement).disabled = count < currentCosts[i];
-  });
-
-  updateUI();
-};
+function updateButtonDisplay(upgrade: Upgrade) {
+  upgrade.button.textContent =
+    `Buy ${upgrade.name} (+${upgrade.rate}/sec) - Cost: ${
+      upgrade.cost.toFixed(1)
+    }`;
+  upgrade.button.disabled = money < upgrade.cost;
+}
 
 // Initialize UI
-updateDisplay();
+updateUI();
 
 // Handle manual click
 button.onclick = () => {
-  count++;
-  updateDisplay();
+  money++;
+  updateUI();
 };
 
 // Create purchase buttons for each upgrade
-upgrades.forEach((upgrade, i) => {
-  const btn = document.createElement("button");
-  btn.textContent = `Buy ${upgrade.name} (+${
-    upgrade.rate.toFixed(1)
-  }/sec) - Cost: ${currentCosts[i].toFixed(1)}`;
-  btn.classList.add("upgrade-btn");
-  btn.disabled = count < currentCosts[i]; // Use current cost, not base cost
-  btn.onclick = () => {
-    if (count >= currentCosts[i]) {
-      count -= currentCosts[i];
-      ownedUpgrades[i]++;
+upgrades.forEach((upgrade) => {
+  upgrade.button.classList.add("upgrade-btn");
+  updateButtonDisplay(upgrade);
+  upgrade.button.onclick = () => {
+    if (money >= upgrade.cost) {
+      money -= upgrade.cost;
+      upgrade.owned++;
       totalRate += upgrade.rate;
-
-      // Increase price by 15% after purchase
-      currentCosts[i] *= 1.15;
-
-      // Update button text and re-check all button states
-      btn.textContent = `Buy ${upgrade.name} (+${
-        upgrade.rate.toFixed(1)
-      }/sec) - Cost: ${currentCosts[i].toFixed(1)}`;
-      updateDisplay();
+      upgrade.cost *= 1.15; // increase price
+      updateButtonDisplay(upgrade);
+      updateUI();
     }
   };
-  document.body.appendChild(btn);
+  document.body.appendChild(upgrade.button);
 });
 
 // Animation loop (60fps safe)
@@ -98,8 +104,8 @@ let lastTime = performance.now();
 const animate = (currentTime: number) => {
   const deltaTime = (currentTime - lastTime) / 1000; // seconds
   if (deltaTime >= 0.01) { // update every 10ms
-    count += totalRate * deltaTime;
-    updateDisplay();
+    money += totalRate * deltaTime;
+    updateUI();
     lastTime = currentTime;
   }
   requestAnimationFrame(animate);
@@ -108,10 +114,16 @@ requestAnimationFrame(animate);
 
 // Update status displays
 function updateUI() {
-  rateDisplay.textContent = `Production rate: ${
-    totalRate.toFixed(1)
-  } Dollars/sec`;
-  ownedUpgrades.forEach((owned, i) => {
-    ownedDisplays[i].textContent = `${upgrades[i].name}: ${owned} owned`;
+  counterDisplay.textContent = `💰 Money: ${money.toFixed(1)}`;
+
+  rateDisplay.textContent = `💰 Earnings: ${totalRate.toFixed(1)} money/sec`;
+
+  ownedDisplays.forEach((display, i) => {
+    display.textContent = `${upgrades[i].name}: ${upgrades[i].owned} owned`;
+  });
+
+  // Also update all upgrade buttons (enables/disables based on affordability)
+  upgrades.forEach((upgrade) => {
+    updateButtonDisplay(upgrade);
   });
 }
