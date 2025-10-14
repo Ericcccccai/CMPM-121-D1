@@ -22,32 +22,54 @@ interface Upgrade {
   rate: number;
   owned: number;
   button: HTMLButtonElement;
+  description: string;
 }
 
 const upgrades: Upgrade[] = [
   {
-    name: "🌱 Buy Seeds",
+    name: "Buy Seeds",
     baseCost: 10,
     cost: 10,
     rate: 0.1,
     owned: 0,
     button: document.createElement("button"),
+    description: "Gotta buy some seed to start right",
   },
   {
-    name: "🪴 Buy Planter",
+    name: "Buy Planter",
     baseCost: 100,
     cost: 100,
     rate: 2.0,
     owned: 0,
     button: document.createElement("button"),
+    description: "Ok now we are on to something",
   },
   {
-    name: "🌿 Buy Greenhouse",
+    name: "Buy Greenhouse",
     baseCost: 1000,
     cost: 1000,
     rate: 50,
     owned: 0,
     button: document.createElement("button"),
+    description: "We are going BBIIIIIIGGGGGGGGGG",
+  },
+  {
+    name: "Buy Drones",
+    baseCost: 3000,
+    cost: 3000,
+    rate: 125,
+    owned: 0,
+    button: document.createElement("button"),
+    description: "Drones help planting",
+  },
+  {
+    name: "Buy Bioengineered Garden",
+    baseCost: 6000,
+    cost: 6000,
+    rate: 300,
+    owned: 0,
+    button: document.createElement("button"),
+    description: "Chem students doing their work",
   },
 ];
 
