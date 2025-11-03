@@ -1,3 +1,4 @@
+// Imports
 import "./style.css";
 
 // Game state
@@ -14,7 +15,7 @@ const counterDisplay = document.createElement("div");
 counterDisplay.textContent = `Money: ${money}`;
 document.body.appendChild(counterDisplay);
 
-// Upgrade definitions
+// Upgrade Interfaces
 interface Upgrade {
   name: string;
   baseCost: number;
@@ -86,6 +87,39 @@ upgrades.forEach((upgrade, _i) => {
   document.body.appendChild(div);
 });
 
+// Create purchase buttons for each upgrade
+upgrades.forEach((upgrade) => {
+  upgrade.button.classList.add("upgrade-btn");
+  updateButtonDisplay(upgrade);
+  upgrade.button.onclick = () => {
+    if (money >= upgrade.cost) {
+      money -= upgrade.cost;
+      upgrade.owned++;
+      totalRate += upgrade.rate;
+      upgrade.cost *= 1.15; // increase price
+      updateButtonDisplay(upgrade);
+      updateUI();
+    }
+  };
+  document.body.appendChild(upgrade.button);
+});
+
+// Update status displays
+function updateUI() {
+  counterDisplay.textContent = `💰 Money: ${money.toFixed(1)}`;
+
+  rateDisplay.textContent = `💰 Earnings: ${totalRate.toFixed(1)} money/sec`;
+
+  ownedDisplays.forEach((display, i) => {
+    display.textContent = `${upgrades[i].name}: ${upgrades[i].owned} owned`;
+  });
+
+  // Also update all upgrade buttons (enables/disables based on affordability)
+  upgrades.forEach((upgrade) => {
+    updateButtonDisplay(upgrade);
+  });
+}
+
 // Update display and button states
 function updateButtonDisplay(upgrade: Upgrade) {
   upgrade.button.textContent =
@@ -104,23 +138,6 @@ button.onclick = () => {
   updateUI();
 };
 
-// Create purchase buttons for each upgrade
-upgrades.forEach((upgrade) => {
-  upgrade.button.classList.add("upgrade-btn");
-  updateButtonDisplay(upgrade);
-  upgrade.button.onclick = () => {
-    if (money >= upgrade.cost) {
-      money -= upgrade.cost;
-      upgrade.owned++;
-      totalRate += upgrade.rate;
-      upgrade.cost *= 1.15; // increase price
-      updateButtonDisplay(upgrade);
-      updateUI();
-    }
-  };
-  document.body.appendChild(upgrade.button);
-});
-
 // Animation loop (60fps safe)
 let lastTime = performance.now();
 const animate = (currentTime: number) => {
@@ -133,19 +150,3 @@ const animate = (currentTime: number) => {
   requestAnimationFrame(animate);
 };
 requestAnimationFrame(animate);
-
-// Update status displays
-function updateUI() {
-  counterDisplay.textContent = `💰 Money: ${money.toFixed(1)}`;
-
-  rateDisplay.textContent = `💰 Earnings: ${totalRate.toFixed(1)} money/sec`;
-
-  ownedDisplays.forEach((display, i) => {
-    display.textContent = `${upgrades[i].name}: ${upgrades[i].owned} owned`;
-  });
-
-  // Also update all upgrade buttons (enables/disables based on affordability)
-  upgrades.forEach((upgrade) => {
-    updateButtonDisplay(upgrade);
-  });
-}
