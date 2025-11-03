@@ -1,11 +1,11 @@
-// Imports
+/* Imports */
 import "./style.css";
 
-// Game state
+/* Game State Variables */
 let totalMoney = 0;
 let totalRate = 0; // combined production rate from all upgrades
 
-// UI elements
+/* UI Elements */
 const button = document.createElement("button");
 button.textContent = "Sell Flower";
 button.classList.add("manual-click-btn");
@@ -15,7 +15,7 @@ const counterDisplay = document.createElement("div");
 counterDisplay.textContent = `totalMoney: ${totalMoney}`;
 document.body.appendChild(counterDisplay);
 
-// Upgrade Interfaces
+/* Upgrade Interfaces */
 interface Upgrade {
   name: string;
   baseCost: number;
@@ -74,7 +74,7 @@ const upgrades: Upgrade[] = [
   },
 ];
 
-// Status displays
+/* Status Displays */
 const rateDisplay = document.createElement("div");
 rateDisplay.textContent = "Production rate: 0 flowers/sec";
 document.body.appendChild(rateDisplay);
@@ -87,7 +87,7 @@ upgrades.forEach((upgrade, _i) => {
   document.body.appendChild(div);
 });
 
-// Create purchase buttons for each upgrade
+/* Purchase Buttons */
 upgrades.forEach((upgrade) => {
   upgrade.button.classList.add("upgrade-btn");
   updateButtonDisplay(upgrade);
@@ -104,7 +104,7 @@ upgrades.forEach((upgrade) => {
   document.body.appendChild(upgrade.button);
 });
 
-// Update status displays
+/* Update Status Displays */
 function updateUI() {
   counterDisplay.textContent = `💰 totalMoney: ${totalMoney.toFixed(1)}`;
 
@@ -122,7 +122,7 @@ function updateUI() {
   });
 }
 
-// Update display and button states
+/* Update display and button states */
 function updateButtonDisplay(upgrade: Upgrade) {
   upgrade.button.textContent =
     `Buy ${upgrade.name} (+${upgrade.rate}/sec) - Cost: ${
@@ -131,16 +131,16 @@ function updateButtonDisplay(upgrade: Upgrade) {
   upgrade.button.disabled = totalMoney < upgrade.cost;
 }
 
-// Initialize UI
+/* Initialize UI */
 updateUI();
 
-// Handle manual click
+/* Handle Manual UI */
 button.onclick = () => {
   totalMoney++;
   updateUI();
 };
 
-// Animation loop (60fps safe)
+/* Animation Loop */
 let lastTime = performance.now();
 const animate = (currentTime: number) => {
   const deltaTime = (currentTime - lastTime) / 1000; // seconds
