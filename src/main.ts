@@ -2,7 +2,7 @@
 import "./style.css";
 
 // Game state
-let money = 0;
+let totalMoney = 0;
 let totalRate = 0; // combined production rate from all upgrades
 
 // UI elements
@@ -12,7 +12,7 @@ button.classList.add("manual-click-btn");
 document.body.appendChild(button);
 
 const counterDisplay = document.createElement("div");
-counterDisplay.textContent = `Money: ${money}`;
+counterDisplay.textContent = `totalMoney: ${totalMoney}`;
 document.body.appendChild(counterDisplay);
 
 // Upgrade Interfaces
@@ -21,7 +21,7 @@ interface Upgrade {
   baseCost: number;
   cost: number;
   rate: number;
-  owned: number;
+  quantity: number;
   button: HTMLButtonElement;
   description: string;
 }
@@ -32,7 +32,7 @@ const upgrades: Upgrade[] = [
     baseCost: 10,
     cost: 10,
     rate: 0.1,
-    owned: 0,
+    quantity: 0,
     button: document.createElement("button"),
     description: "Gotta buy some seed to start right",
   },
@@ -41,7 +41,7 @@ const upgrades: Upgrade[] = [
     baseCost: 100,
     cost: 100,
     rate: 2.0,
-    owned: 0,
+    quantity: 0,
     button: document.createElement("button"),
     description: "Ok now we are on to something",
   },
@@ -50,7 +50,7 @@ const upgrades: Upgrade[] = [
     baseCost: 1000,
     cost: 1000,
     rate: 50,
-    owned: 0,
+    quantity: 0,
     button: document.createElement("button"),
     description: "We are going BBIIIIIIGGGGGGGGGG",
   },
@@ -59,7 +59,7 @@ const upgrades: Upgrade[] = [
     baseCost: 3000,
     cost: 3000,
     rate: 125,
-    owned: 0,
+    quantity: 0,
     button: document.createElement("button"),
     description: "Drones help planting",
   },
@@ -68,7 +68,7 @@ const upgrades: Upgrade[] = [
     baseCost: 6000,
     cost: 6000,
     rate: 300,
-    owned: 0,
+    quantity: 0,
     button: document.createElement("button"),
     description: "Chem students doing their work",
   },
@@ -92,9 +92,9 @@ upgrades.forEach((upgrade) => {
   upgrade.button.classList.add("upgrade-btn");
   updateButtonDisplay(upgrade);
   upgrade.button.onclick = () => {
-    if (money >= upgrade.cost) {
-      money -= upgrade.cost;
-      upgrade.owned++;
+    if (totalMoney >= upgrade.cost) {
+      totalMoney -= upgrade.cost;
+      upgrade.quantity++;
       totalRate += upgrade.rate;
       upgrade.cost *= 1.15; // increase price
       updateButtonDisplay(upgrade);
@@ -106,12 +106,14 @@ upgrades.forEach((upgrade) => {
 
 // Update status displays
 function updateUI() {
-  counterDisplay.textContent = `💰 Money: ${money.toFixed(1)}`;
+  counterDisplay.textContent = `💰 totalMoney: ${totalMoney.toFixed(1)}`;
 
-  rateDisplay.textContent = `💰 Earnings: ${totalRate.toFixed(1)} money/sec`;
+  rateDisplay.textContent = `💰 Earnings: ${
+    totalRate.toFixed(1)
+  } totalMoney/sec`;
 
   ownedDisplays.forEach((display, i) => {
-    display.textContent = `${upgrades[i].name}: ${upgrades[i].owned} owned`;
+    display.textContent = `${upgrades[i].name}: ${upgrades[i].quantity} owned`;
   });
 
   // Also update all upgrade buttons (enables/disables based on affordability)
@@ -126,7 +128,7 @@ function updateButtonDisplay(upgrade: Upgrade) {
     `Buy ${upgrade.name} (+${upgrade.rate}/sec) - Cost: ${
       upgrade.cost.toFixed(1)
     }`;
-  upgrade.button.disabled = money < upgrade.cost;
+  upgrade.button.disabled = totalMoney < upgrade.cost;
 }
 
 // Initialize UI
@@ -134,7 +136,7 @@ updateUI();
 
 // Handle manual click
 button.onclick = () => {
-  money++;
+  totalMoney++;
   updateUI();
 };
 
@@ -143,7 +145,7 @@ let lastTime = performance.now();
 const animate = (currentTime: number) => {
   const deltaTime = (currentTime - lastTime) / 1000; // seconds
   if (deltaTime >= 0.01) { // update every 10ms
-    money += totalRate * deltaTime;
+    totalMoney += totalRate * deltaTime;
     updateUI();
     lastTime = currentTime;
   }
